@@ -26,6 +26,14 @@
     <!-- 彈窗 -->
     <div v-if="selectedImage" class="popup-overlay" @click="selectedImage = null">
       <div class="popup-content" @click.stop>
+        <button class="btn-close" @click="selectedImage = null" aria-label="Close popup">
+        <!-- SVG X icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        </button>
+
         <h3 class="popup-title mb-2 font-semibold text-lg">Item Detail</h3>
 
         <div class="relative w-full">
@@ -36,22 +44,20 @@
           />
           <button
             class="absolute bottom-2 right-2 bg-green-500 text-white text-sm px-3 py-1 rounded hover:bg-green-600"
-            @click.stop="handleSignIn"
+            @click.stop="handleSeenIn"
           >
-            Sign In
+            Seen In
           </button>
         </div>
 
         <p class="mb-4" style="color: red;">{{ selectedImage.description }}</p>
-
-        <button @click="selectedImage = null" class="btn-close">關閉</button>
       </div>
     </div>
 
-    <!-- Sign In 子彈窗 -->
-    <div v-if="showSignIn" class="popup-overlay" @click="showSignIn = false">
+    <!-- Seen In 子彈窗 -->
+    <div v-if="showSeenIn" class="popup-overlay" @click="showSeenIn = false">
       <div class="popup-content max-w-md w-full" @click.stop>
-        <h3 class="text-lg font-semibold text-black mb-4 block">Sign In Form</h3>
+        <h3 class="text-lg font-semibold text-black mb-4 block">Seen In Form</h3>
       
         <div class="mb-4 flex items-center">
           <label for="url-input" class="block font-medium mb-1 w-28 text-left">Image url</label><br>
@@ -76,7 +82,7 @@
         <div class="flex justify-end gap-2">
           <button
             class="bg-gray-300 text-black px-3 py-1 rounded hover:bg-gray-400"
-            @click="showSignIn = false"
+            @click="showSeenIn = false"
           >
             Cancel
           </button>
@@ -102,7 +108,7 @@ const router = useRouter()
 
 const currentImage = ref(images[0])
 const selectedImage = ref(null)
-const showSignIn = ref(false)
+const showSeenIn = ref(false)
 const form = ref({ url: '', text: '' })
 
 watch(
@@ -126,8 +132,8 @@ function openPopup(img) {
   selectedImage.value = img
 }
 
-function handleSignIn() {
-  showSignIn.value = true
+function handleSeenIn() {
+  showSeenIn.value = true
 }
 
 function submitForm() {
@@ -139,14 +145,14 @@ function submitForm() {
     return
   }
 
-  // 合併成一個搜尋關鍵字字串（你可以自由調整格式）
+  // 合併成一個搜尋關鍵字字串
   const combinedKeyword = `${keywordText} ${keywordUrl}`.trim()
 
   // 跳轉並帶入 query
   router.push({ name: 'MatchedImages', query: { keyword: combinedKeyword } })
 
   form.value = { url: '', text: '' }
-  showSignIn.value = false
+  showSeenIn.value = false
 }
 </script>
 
@@ -205,6 +211,8 @@ function submitForm() {
   position: relative;
   max-width: 90vw;
   max-height: 90vh;
+  max-width: 600px;
+  width: 100%;
   overflow: auto;
   color: #000;
 }
@@ -225,20 +233,29 @@ function submitForm() {
 }
 
 .btn-close {
-  background-color: #3b82f6;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  cursor: pointer;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: transparent;
   border: none;
-  transition: background-color 0.3s ease;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  user-select: none;
+  transition: color 0.3s ease;
 }
 
-.btn-close:hover {
-  background-color: #2563eb;
+.relative {
+  position: relative;
 }
 
-.sign-in-form {
-  display: block;
+.absolute {
+  position: absolute;
+  bottom: 0.5rem; /* or bottom-2 in Tailwind */
+  right: 0.5rem;  /* or right-2 */
 }
+
 </style>
